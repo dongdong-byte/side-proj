@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'kim'
+version = '0.0.1-SNAPSHOT'
+description = 'onBidproperty'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    /* =====================================
+     🧩 1. 기본 스프링 부트 웹 구성요소
+     ===================================== */
+    implementation 'org.springframework.boot:spring-boot-starter-web'      // MVC, REST API, 내장 Tomcat
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'     // JDBC, HikariCP 커넥션 풀
+
+    /* =====================================
+     🗂️ 2. MyBatis & DB 연동
+     ===================================== */
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+//    WebClient 의존성
+    testImplementation 'io.projectreactor:reactor-test'// MyBatis-Spring 통합
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'                           // MariaDB JDBC 드라이버
+
+    /* =====================================
+     💡 3. 개발 편의 및 코드 단축
+     ===================================== */
+    compileOnly 'org.projectlombok:lombok'           // Lombok (컴파일 시에만 사용)
+    annotationProcessor 'org.projectlombok:lombok'   // Lombok 어노테이션 처리기
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'  // 코드 수정 시 자동 리로드
+
+    /* =====================================
+     ✅ 4. 유효성 검증 (Validation)
+     ===================================== */
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // → @Valid, @NotNull, @Size 등 검증 어노테이션 사용 가능
+    // jakarta.validation.constraints 패키지 기반
+
+    /* =====================================
+     📘 5. API 문서화 (Swagger / OpenAPI)
+     ===================================== */
+    implementation 'org.apache.commons:commons-lang3:3.19.0'
+    // → Swagger UI: http://localhost:8080/swagger-ui/index.html
+    // → OpenAPI 3.0 스펙 자동 문서화
+
+    /* =====================================
+     🧪 6. 테스트 관련 의존성
+     ===================================== */
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'      // JUnit, Mockito 등 포함
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'  // MyBatis 테스트 지원
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'                // JUnit 플랫폼 실행기
+    // ModelMapper
+    implementation 'org.modelmapper:modelmapper:3.1.1'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

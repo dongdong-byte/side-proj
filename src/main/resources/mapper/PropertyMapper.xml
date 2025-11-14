@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kim.onbidproperty.mapper.PropertyMapper">
+    <!-- resultMap 정의 -->
+    <resultMap id="propertyResultMap" type="kim.onbidproperty.domain.Property">
+        <id property="id" column="id"/>
+        <result property="cltrNo" column="cltr_no"/>
+        <result property="cltrMnmtNo" column="cltr_mnmt_no"/>
+        <result property="plnmNo" column="plnm_no"/>
+        <result property="name" column="name"/>
+        <result property="goodsDescription" column="goods_description"/>
+        <result property="category" column="category"/>
+        <result property="location" column="location"/>
+        <result property="roadAddress" column="road_address"/>
+        <result property="pnu" column="pnu"/>
+        <result property="appraisalPrice" column="appraisal_price"/>
+        <result property="minBidPrice" column="min_bid_price"/>
+        <result property="currentPrice" column="current_price"/>
+        <result property="bidMethod" column="bid_method"/>
+        <result property="auctionStartTime" column="auction_start_time"/>
+        <result property="auctionEndTime" column="auction_end_time"/>
+        <result property="pbctStatus" column="pbct_status"/>
+        <result property="saleType" column="sale_type"/>
+        <result property="status" column="status"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="bidCount" column="bid_count"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="syncedAt" column="synced_at"/>
+    </resultMap>
+    
+    <!-- 1. Read -->
+    <!-- 전체 물건 조회(물건명 기준 정렬) -->
+    <select id="selectAllProperties" resultMap="propertyResultMap">
+        SELECT *
+        FROM Properties
+        WHERE status = 'AVAILABLE'
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 물건 ID로 조회 -->
+    <select id="selectPropertyById" resultMap="propertyResultMap">
+        SELECT *
+        FROM Properties
+        WHERE id = #{id}
+    </select>
+    
+    <!-- 물건번호로 조회 -->
+    <select id="selectPropertyByCltrNo" resultMap="propertyResultMap">
+        SELECT *
+        FROM Properties
+        WHERE cltr_no = #{cltrNo}
+    </select>
+    
+    <!-- 물건 검색(물건명, 위치) -->
+    <select id="searchProperties" resultMap="propertyResultMap">
+        SELECT *
+        FROM Properties
+        WHERE status = 'AVAILABLE'
+          AND (
+              name LIKE CONCAT('%', #{keyword}, '%')
+              OR location LIKE CONCAT('%', #{keyword}, '%')
+          )
+        ORDER BY name ASC
+    </select>
+    
+    <!-- 상태별 물건 조회 -->
+    <select id="selectPropertiesByStatus" resultMap="propertyResultMap">
+        SELECT *
+        FROM Properties
+        WHERE status = #{status}
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 진행중인 경매 물건 조회 -->
+    <select id="selectOngoingAuctions" resultMap="propertyResultMap">
+        SELECT *
+        FROM Properties
+        WHERE status = 'AVAILABLE'
+          AND auction_start_time &lt;= NOW()
+          AND auction_end_time &gt;= NOW()
+        ORDER BY auction_end_time ASC
+    </select>
+    
+    <!-- 2. Create -->
+    <!-- 물건 등록 -->
+    <insert id="insertProperty" useGeneratedKeys="true" keyProperty="id" 
+            parameterType="kim.onbidproperty.domain.Property">
+        INSERT INTO Properties (
+            cltr_no, cltr_mnmt_no, plnm_no, name, goods_description, category, 
+            location, road_address, pnu, appraisal_price, min_bid_price, current_price, 
+            bid_method, auction_start_time, auction_end_time, pbct_status, sale_type, 
+            status, view_count, bid_count, image_url, synced_at
+        )
+        VALUES (
+            #{cltrNo}, #{cltrMnmtNo}, #{plnmNo}, #{name}, #{goodsDescription}, #{category},
+            #{location}, #{roadAddress}, #{pnu}, #{appraisalPrice}, #{minBidPrice}, #{currentPrice},
+            #{bidMethod}, #{auctionStartTime}, #{auctionEndTime}, #{pbctStatus}, #{saleType},
+            #{status}, #{viewCount}, #{bidCount}, #{imageUrl}, #{syncedAt}
+        )
+    </insert>
+    
+    <!-- 3. Update -->
+    <!-- 물건정보 전체 수정 -->
+    <update id="updateProperty" parameterType="kim.onbidproperty.domain.Property">
+        UPDATE Properties
+        SET cltr_no = #{cltrNo},
+            cltr_mnmt_no = #{cltrMnmtNo},
+            plnm_no = #{plnmNo},
+            name = #{name},
+            goods_description = #{goodsDescription},
+            category = #{category},
+            location = #{location},
+            road_address = #{roadAddress},
+            pnu = #{pnu},
+            appraisal_price = #{appraisalPrice},
+            min_bid_price = #{minBidPrice},
+            current_price = #{currentPrice},
+            bid_method = #{bidMethod},
+            auction_start_time = #{auctionStartTime},
+            auction_end_time = #{auctionEndTime},
+            pbct_status = #{pbctStatus},
+            sale_type = #{saleType},
+            status = #{status},
+            view_count = #{viewCount},
+            bid_count = #{bidCount},
+            image_url = #{imageUrl},
+            synced_at = #{syncedAt}
+        WHERE id = #{id}
+    </update>
+    <!-- 부분 수정 (null이 아닌 필드만) -->
+    <update id="patchProperty" parameterType="kim.onbidproperty.domain.Property">
+        UPDATE Properties
+        <set>
+            <if test="cltrNo != null">cltr_no = #{cltrNo},</if>
+            <if test="cltrMnmtNo != null">cltr_mnmt_no = #{cltrMnmtNo},</if>
+            <if test="plnmNo != null">plnm_no = #{plnmNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="goodsDescription != null">goods_description = #{goodsDescription},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="roadAddress != null">road_address = #{roadAddress},</if>
+            <if test="pnu != null">pnu = #{pnu},</if>
+            <if test="appraisalPrice != null">appraisal_price = #{appraisalPrice},</if>
+            <if test="minBidPrice != null">min_bid_price = #{minBidPrice},</if>
+            <if test="currentPrice != null">current_price = #{currentPrice},</if>
+            <if test="bidMethod != null">bid_method = #{bidMethod},</if>
+            <if test="auctionStartTime != null">auction_start_time = #{auctionStartTime},</if>
+            <if test="auctionEndTime != null">auction_end_time = #{auctionEndTime},</if>
+            <if test="pbctStatus != null">pbct_status = #{pbctStatus},</if>
+            <if test="saleType != null">sale_type = #{saleType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="viewCount != null">view_count = #{viewCount},</if>
+            <if test="bidCount != null">bid_count = #{bidCount},</if>
+            <if test="imageUrl != null">image_url = #{imageUrl},</if>
+            <if test="syncedAt != null">synced_at = #{syncedAt},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 물건 상태 변경 -->
+    <update id="updatePropertyStatus">
+        UPDATE Properties
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 조회수 증가 -->
+    <update id="incrementViewCount">
+        UPDATE Properties
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 입찰수 증가 -->
+    <update id="incrementBidCount">
+        UPDATE Properties
+        SET bid_count = bid_count + 1
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 4. Delete -->
+    <!-- 물건 삭제 -->
+    <delete id="deleteProperty">
+        DELETE FROM Properties
+        WHERE id = #{id}
+    </delete>
+    
+    <!-- API 동기화 시간 업데이트 -->
+    <update id="updateSyncedAt">
+        UPDATE Properties
+        SET synced_at = NOW()
+        WHERE id = #{id}
+    </update>
+</mapper>

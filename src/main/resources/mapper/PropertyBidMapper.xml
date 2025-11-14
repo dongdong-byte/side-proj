@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kim.onbidproperty.mapper.PropertyBidHistoryMapper">
+
+    <!-- resultMap 정의 -->
+    <resultMap id="historyResultMap" type="kim.onbidproperty.domain.PropertyBidHistory">
+        <id property="id" column="id"/>
+        <result property="propertyId" column="property_id"/>
+        <result property="cltrNo" column="cltr_no"/>
+        <result property="pbctNo" column="pbct_no"/>
+        <result property="pbctSeq" column="pbct_seq"/>
+        <result property="pbctDgr" column="pbct_dgr"/>
+        <result property="minBidPrice" column="min_bid_price"/>
+        <result property="appraisalPrice" column="appraisal_price"/>
+        <result property="feeRate" column="fee_rate"/>
+        <result property="auctionStartTime" column="auction_start_time"/>
+        <result property="auctionEndTime" column="auction_end_time"/>
+        <result property="auctionResultTime" column="auction_result_time"/>
+        <result property="depositRate" column="deposit_rate"/>
+        <result property="bidStatus" column="bid_status"/>
+        <result property="resultStatus" column="result_status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 1. Read -->
+    <!-- 특정 물건의 전체 회차 조회 -->
+    <select id="selectHistoriesByPropertyId" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE property_id = #{propertyId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 특정 물건의 특정 회차 조회 -->
+    <select id="selectHistoryByPropertyIdAndPbctNo" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE property_id = #{propertyId}
+          AND pbct_no = #{pbctNo}
+    </select>
+
+    <!-- ID로 조회 -->
+    <select id="selectHistoryById" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE id = #{id}
+    </select>
+
+    <!-- 물건번호로 전체 회차 조회 -->
+    <select id="selectHistoriesByCltrNo" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE cltr_no = #{cltrNo}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 입찰 상태별 조회 -->
+    <select id="selectHistoriesByBidStatus" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE bid_status = #{bidStatus}
+        ORDER BY auction_end_time ASC
+    </select>
+
+    <!-- 진행중인 회차 조회 -->
+    <select id="selectOngoingHistories" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE bid_status = 'ONGOING'
+          AND auction_start_time &lt;= NOW()
+          AND auction_end_time &gt;= NOW()
+        ORDER BY auction_end_time ASC
+    </select>
+
+    <!-- 특정 물건의 최신 회차 조회 -->
+    <select id="selectLatestHistoryByPropertyId" resultMap="historyResultMap">
+        SELECT *
+        FROM Properties_bids_history
+        WHERE property_id = #{propertyId}
+        ORDER BY created_at DESC
+            LIMIT 1
+    </select>
+
+    <!-- 2. Create -->
+    <!-- 회차 등록 -->
+    <insert id="insertHistory" useGeneratedKeys="true" keyProperty="id"
+            parameterType="kim.onbidproperty.domain.PropertyBidHistory">
+        INSERT INTO Properties_bids_history (
+            property_id, cltr_no, pbct_no, pbct_seq, pbct_dgr,
+            min_bid_price, appraisal_price, fee_rate,
+            auction_start_time, auction_end_time, auction_result_time,
+            deposit_rate, bid_status, result_status
+        )
+        VALUES (
+                   #{propertyId}, #{cltrNo}, #{pbctNo}, #{pbctSeq}, #{pbctDgr},
+                   #{minBidPrice}, #{appraisalPrice}, #{feeRate},
+                   #{auctionStartTime}, #{auctionEndTime}, #{auctionResultTime},
+                   #{depositRate}, #{bidStatus}, #{resultStatus}
+               )
+    </insert>
+
+    <!-- 3. Update -->
+    <!-- 전체 수정 (모든 필드) -->
+    <update id="updateHistory" parameterType="kim.onbidproperty.domain.PropertyBidHistory">
+        UPDATE Properties_bids_history
+        SET property_id = #{propertyId},
+            cltr_no = #{cltrNo},
+            pbct_no = #{pbctNo},
+            pbct_seq = #{pbctSeq},
+            pbct_dgr = #{pbctDgr},
+            min_bid_price = #{minBidPrice},
+            appraisal_price = #{appraisalPrice},
+            fee_rate = #{feeRate},
+            auction_start_time = #{auctionStartTime},
+            auction_end_time = #{auctionEndTime},
+            auction_result_time = #{auctionResultTime},
+            deposit_rate = #{depositRate},
+            bid_status = #{bidStatus},
+            result_status = #{resultStatus}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 부분 수정 (null이 아닌 필드만) -->
+    <update id="patchHistory" parameterType="kim.onbidproperty.domain.PropertyBidHistory">
+        UPDATE Properties_bids_history
+        <set>
+            <if test="propertyId != null">property_id = #{propertyId},</if>
+            <if test="cltrNo != null">cltr_no = #{cltrNo},</if>
+            <if test="pbctNo != null">pbct_no = #{pbctNo},</if>
+            <if test="pbctSeq != null">pbct_seq = #{pbctSeq},</if>
+            <if test="pbctDgr != null">pbct_dgr = #{pbctDgr},</if>
+            <if test="minBidPrice != null">min_bid_price = #{minBidPrice},</if>
+            <if test="appraisalPrice != null">appraisal_price = #{appraisalPrice},</if>
+            <if test="feeRate != null">fee_rate = #{feeRate},</if>
+            <if test="auctionStartTime != null">auction_start_time = #{auctionStartTime},</if>
+            <if test="auctionEndTime != null">auction_end_time = #{auctionEndTime},</if>
+            <if test="auctionResultTime != null">auction_result_time = #{auctionResultTime},</if>
+            <if test="depositRate != null">deposit_rate = #{depositRate},</if>
+            <if test="bidStatus != null">bid_status = #{bidStatus},</if>
+            <if test="resultStatus != null">result_status = #{resultStatus},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 입찰 상태 변경 -->
+    <update id="updateBidStatus">
+        UPDATE Properties_bids_history
+        SET bid_status = #{bidStatus},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 낙찰 상태 변경 -->
+    <update id="updateResultStatus">
+        UPDATE Properties_bids_history
+        SET result_status = #{resultStatus},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 4. Delete -->
+    <!-- 회차 삭제 -->
+    <delete id="deleteHistory">
+        DELETE FROM Properties_bids_history
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 특정 물건의 모든 회차 삭제 -->
+    <delete id="deleteHistoriesByPropertyId">
+        DELETE FROM Properties_bids_history
+        WHERE property_id = #{propertyId}
+    </delete>
+
+</mapper>
