@@ -36,6 +36,8 @@ dependencies {
      ===================================== */
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+//    thymleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
 //    WebClient 의존성
     testImplementation 'io.projectreactor:reactor-test'// MyBatis-Spring 통합

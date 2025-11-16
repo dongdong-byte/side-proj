@@ -71,3 +71,24 @@ CREATE TABLE `properties_bids_history` (
     COLLATE='utf8mb4_uca1400_ai_ci'
     ENGINE=InnoDB
 ;
+
+
+create  table `user_bids`(
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `property_id` BIGINT(20) NOT NULL COMMENT '물건 FK'
+    ,`history_id` BIGINT(20) NOT NULL COMMENT '입찰회차 FK',
+    `bidder_name` VARCHAR(100) NOT NULL COMMENT '입찰자 이름' COLLATE 'utf8mb4_uca1400_ai_ci',
+    `bidder_phone` varchar(20) null  default  null comment '입찰자 전화번호' collate 'utf8mb4_uca1400_ai_ci',
+    `bidder_email` varchar(100) null  default  null comment '입찰자 이메일' collate 'utf8mb4_uca1400_ai_ci',
+    `bid_amount` DECIMAL(15, 2) not null COMMENT '입찰가격',
+    `bid_time` datetime not null  default  current_timestamp(3)comment '입찰시간',
+    `is_winner` tinyint(1) null  default  0 comment '낙찰여부(0:미낙찰 ,1: 낙찰)',
+     `created_at` DATETIME NULL DEFAULT current_timestamp(),
+    `updated_at` DATETIME NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    PRIMARY KEY (`id`) USING BTREE,
+    index `idx_property_history` (`property_id`, `history_id`) using  btree ,  -- 복합 인덱스
+    index  `idx_bidder_name` (`bidder_name`) using  btree ,
+    index  `idx_bid_amount` (`bid_amount`) using  btree ,
+    CONSTRAINT `user_bids_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE,
+    CONSTRAINT `user_bids_ibfk_2` FOREIGN KEY (`history_id`) REFERENCES `properties_bids_history` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE
+)comment='입찰정보' collate ='utf8mb4_uca1400_ai_ci' engine =InnoDB;
