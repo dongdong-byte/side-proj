@@ -1,31 +1,29 @@
-구현한 기능
+완료된 작업
+1. 도메인
 
-1.복합인덱스
-index `idx_property_history` (`property_id`, `history_id`) using  btree ,  -- 복합 인덱스
+UserBid.java 엔티티 생성
 
-2.enum 클래스 설정
-// 개발자가 코딩할 때 사용 (영어, 대문자)
-if (status == BidStatus.PENDING) {
-    // ... 로직 처리
-}
+2. 데이터베이스
 
-3.modelmapper 3.x버젼
-ModelMapper 3.1.1 에서는 AccessLevel 설정을 제거해야 한다
+user_bids 테이블 생성 (복합 인덱스 포함)
 
-4.modelmapper
+3. 데이터 접근 계층
 
-5.DuplicateResourceException 예외처리 클래스 설정
+UserBidMapper.java 인터페이스
+UserBidMapper.xml SQL 쿼리
 
-6.@param
+4. 비즈니스 로직
 
-7.인덱스 (DB설정)
+UserBidService.java (입찰 등록, 조회, 낙찰자 지정 등)
 
-8.전역예외처리 핸들러
-\
-9.xml resultmap,sql태그
-코드 를 한곳에 모아서 유지 보수가 용이함
+5. 컨트롤러
 
-10.MyBatis에서 “동적 SQL(Dynamic SQL)” 중에서도 <set> + <if> 조건문을 이용한 부분 업데이트(Partial Update) .
-UserBid 객체에서 null이 아닌 값만 골라서 실제 SQL UPDATE 문을 만든다
+BidViewController.java (화면용)
+BidApiController.java (REST API)
 
-11.dto클래스
+6. 화면 템플릿
+
+bids/form.html (입찰 폼)
+bids/list.html (입찰 목록)
+bids/winners.html (낙찰 목록)
+properties/detail.html 수정 (입찰하기 버튼 추가)
