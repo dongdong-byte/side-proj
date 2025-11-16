@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kim.onbidproperty.mapper.UserBidMapper">
+<!--resultMap 정의-->
+    <resultMap id="userBidResultMap" type="kim.onbidproperty.domain.UserBid">
+        <id property="id" column="id" />
+        <result property="propertyId" column="property_id" />
+        <result property="historyId" column="history_id" />
+        <result property="bidderName" column="bidder_name" />
+        <result property="bidderPhone" column="bidder_phone" />
+        <result property="bidderEmail" column="bidder_email" />
+        <result property="bidAmount" column="bid_amount" />
+        <result property="bidTime" column="bid_time" />
+        <result property="isWinner" column="is_winner" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+        
+    </resultMap>
+    
+<!--    sql 태그 -> 반복되는 select 컬럼 묶기-->
+    <sql id="userBidColumns">
+#  column list
+       <trim>
+           id , property_id, history_id, bidder_name, bidder_phone,
+           bidder_email, bid_amount, bid_time, is_winner, created_at, updated_at
+       </trim>
+    </sql>
+<!--    1.READ-->
+<!--    ID로 조회-->
+    <select id="selectById" resultMap="userBidResultMap">
+select <include refid="userBidColumns"></include>
+from user_bids where id = #{id}
+    </select>
+<!--   특정 물건의 모든 입찰 조회-->
+    <select id="selectByPropertyId" resultMap="userBidResultMap">
+        select<include refid="userBidColumns"></include>
+
+        from user_bids
+        WHERE property_id = #{propertyId}
+        order by bid_amount desc
+
+    </select>
+<!--     특정 물건의 특정회차 입찰조회 (복합 인덱스 활용)-->
+    <select id="selectBidsByPropertyAndHistory" resultMap="userBidResultMap">
+        select <include refid="userBidColumns"></include>
+        from user_bids
+        where property_id= #{propertyId}
+        and history_id = #{historyId}
+        order by bid_amount desc
+    </select>
+<!--    입찰자 명으로 조회-->
+    <select id="selectByBidderName" resultMap="userBidResultMap">
+        select <include refid="userBidColumns"></include>
+        from user_bids
+        where bidder_name = #{bidderName}
+        order by bid_amount desc
+    </select>
+<!--    특정회차의 최고 입찰 조회-->
+    <select id="selectHighestBidderByHistoryId" resultMap="userBidResultMap">
+        select <include refid="userBidColumns"></include>
+        from user_bids
+        where history_id = #{historyId}
+        order by bid_amount desc
+            limit 1
+    </select>
+    <!-- 특정 회차의 모든 입찰 조회 -->
+    <select id="selectBidsByHistoryID" resultMap="userBidResultMap">
+        SELECT <include refid="userBidColumns"></include>
+        FROM user_bids
+        WHERE history_id = #{historyId}
+        ORDER BY bid_amount DESC
+    </select>
+<!--    낙찰 입찰 조회-->
+    <select id="selectWinningBids" resultMap="userBidResultMap">
+        select <include refid="userBidColumns"></include>
+        from user_bids
+        where  is_winner =1
+        and  history_id =#{historyId}
+        order by bid_amount desc
+
+
+    </select>
+<!--2.create-->
+    <insert id="insertBid" useGeneratedKeys="true" keyProperty="id" parameterType="kim.onbidproperty.domain.UserBid">
+        INSERT INTO user_bids (
+            property_id, history_id, bidder_name, bidder_phone,
+            bidder_email, bid_amount, bid_time, is_winner
+        )
+        VALUES (
+                   #{propertyId}, #{historyId}, #{bidderName}, #{bidderPhone},
+                   #{bidderEmail}, #{bidAmount}, #{bidTime}, #{isWinner}
+               )
+    </insert>
+<!--    3.update-->
+    <update id="updateBid" parameterType="kim.onbidproperty.domain.UserBid">
+        UPDATE user_bids
+        <set>
+            <if test="propertyId != null"> property_id = #{propertyId}, </if>
+            <if test="historyId != null"> history_id = #{historyId}, </if>
+            <if test="bidderName != null and bidderName != ''"> bidder_name = #{bidderName}, </if>
+            <if test="bidderPhone != null"> bidder_phone = #{bidderPhone}, </if>
+            <if test="bidderEmail != null"> bidder_email = #{bidderEmail}, </if>
+            <if test="bidAmount != null"> bid_amount = #{bidAmount}, </if>
+            <if test="bidTime != null"> bid_time = #{bidTime}, </if>
+            <if test="isWinner != null"> is_winner = #{isWinner}, </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+<!--    낙찰 여부 변경-->
+    <update id="updateWinnerStatus" parameterType="map">
+update  user_bids
+set is_winner = #{isWinner}
+
+WHERE id = #{id}
+
+    </update>
+<!--    4.delete-->
+    <delete id="deleteBid">
+        DELETE FROM user_bids
+        WHERE id = #{id}  </delete>
+<!--    5.특정 물건의 모든 입찰 삭제-->
+    <delete id="deleteBidsByPropertyId">
+        DELETE FROM user_bids
+        WHERE property_id = #{propertyId}
+    </delete>
+</mapper>
