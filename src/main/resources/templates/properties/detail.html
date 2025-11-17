@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!--/* @thymesVar id="property" type="kim.onbidproperty.domain.Property" */-->
-    <!--/* @thymesVar id="histories" type="java.util.List" */-->
-    <!--/* @thymesVar id="message" type="java.lang.String" */-->
-    <!--/* @thymesVar id="success" type="java.lang.Boolean" */-->
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${property.name}">물건 상세</title>
@@ -24,11 +19,6 @@
 </nav>
 
 <div class="container mt-4">
-    <!-- 결과 메시지 -->
-    <!--/*@thymesVar id="success" type="java.lang.Boolean"*/-->
-    <!--/* @thymesVar id="property" type="kim.onbidproperty.domain.Property" */-->
-    <!--/* @thymesVar id="histories" type="java.util.List" */-->
-    <!--/* @thymesVar id="message" type="java.lang.String" */-->
     <div th:if="${message}"
          th:class="${success ? 'alert alert-success' : 'alert alert-danger'}"
          th:text="${message}">
@@ -107,7 +97,6 @@
         </div>
     </div>
 
-    <!-- 회차 이력 및 입찰 버튼 -->
     <div class="card mt-4" th:if="${!#lists.isEmpty(histories)}">
         <div class="card-header">
             <h5>입찰 회차 이력</h5>
@@ -127,13 +116,21 @@
                 </thead>
                 <tbody>
                 <tr th:each="history : ${histories}">
-                    <!--/*@thymesVar id="history" type="kim.onbidproperty.domain.PropertyBidHistory"*/-->
                     <td th:text="${history.pbctDgr}"></td>
                     <td th:text="${history.pbctNo}"></td>
                     <td th:text="${#numbers.formatDecimal(history.minBidPrice, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                     <td th:text="${history.auctionStartTime != null ? #temporals.format(history.auctionStartTime, 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td th:text="${history.auctionEndTime != null ? #temporals.format(history.auctionEndTime, 'yyyy-MM-dd HH:mm') : '-'}"></td>
-                    <td th:text="${history.bidStatus}"></td>
+                    <td>
+                        <!-- enum의 displayName 직접 사용 + 색상은 name()으로 분기 -->
+                        <span th:switch="${history.bidStatus.name()}">
+                            <span th:case="'PENDING'" class="badge bg-warning text-dark" th:text="${history.bidStatus.displayName}">대기</span>
+                            <span th:case="'ONGOING'" class="badge bg-primary" th:text="${history.bidStatus.displayName}">진행중</span>
+                            <span th:case="'COMPLETED'" class="badge bg-secondary" th:text="${history.bidStatus.displayName}">종료</span>
+                            <span th:case="'FAILED'" class="badge bg-danger" th:text="${history.bidStatus.displayName}">실패</span>
+                            <span th:case="*" class="badge bg-info" th:text="${history.bidStatus.displayName}">기타</span>
+                        </span>
+                    </td>
                     <td>
                         <a th:href="@{/bids/new(propertyId=${property.id}, historyId=${history.id})}"
                            class="btn btn-sm btn-primary">입찰하기</a>
