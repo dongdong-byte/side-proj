@@ -30,14 +30,20 @@ public class SyncViewController {
     ){
         log.info("데이터 동기화 시작: numOfRows={}, maxPages={}", numOfRows, maxPages);
         try {
+            // ⬇️⬇️⬇️
+            // ⚠️ 여기가 바로 '동기(Synchronous) 방식'으로 작동하는 부분입니다.
+            // ⚠️ 서버는 이 줄이 끝날 때까지 멈춰서 기다립니다. (Blocking)
             int syncedCount = propertySyncService.syncProperties(numOfRows, maxPages);
+            // ⬇️ 성공 로그 추가
+            log.info("데이터 동기화 성공. 처리 건수: {}", syncedCount);
             redirectAttributes.addFlashAttribute("success", true);
-            redirectAttributes.addFlashAttribute("message", "데이터 동기화 완료! 처리된 물건 수 " + syncedCount);
-
+            redirectAttributes.addFlashAttribute("code", "sync.completed");
+            redirectAttributes.addFlashAttribute("syncedCount", syncedCount );
         } catch (Exception e) {
           log.error("데이터 동기화 실패", e);
           redirectAttributes.addFlashAttribute("success", false);
-          redirectAttributes.addFlashAttribute("message", "데이터 동기화 실패: " + (e.getMessage() != null ? e.getMessage() : "알 수 없는 오류 발생"));
+          redirectAttributes.addFlashAttribute("code", "sync.failed");
+          redirectAttributes.addFlashAttribute("errorDetail", e.getMessage());
         }
 return "redirect:/sync";
 

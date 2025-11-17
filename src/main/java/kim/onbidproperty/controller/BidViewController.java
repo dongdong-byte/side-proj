@@ -73,6 +73,8 @@ public class BidViewController {
             log.error("입찰 등록 실패", e);
             redirectAttributes.addFlashAttribute("success", false);
             redirectAttributes.addFlashAttribute("code", "bid.failed");
+            redirectAttributes.addFlashAttribute("errorDetail" ,e.getMessage());
+
         }
 
         return "redirect:/properties/" + propertyId;

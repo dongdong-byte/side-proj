@@ -31,7 +31,7 @@ public class PropertySyncService {
 
     private  static  final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-//    온비드 api 데이터를 DB에 동기화
+    //    온비드 api 데이터를 DB에 동기화
     @Transactional
     public int syncProperties(int numOfRows , int maxPages){
         log.info("온비드 데이터 동기화시작");
@@ -78,7 +78,7 @@ public class PropertySyncService {
                 }
 
             } catch (Exception e) {
-               log.error("물건 동기화 실패: cltrNo :{}, error= {}",dto.getCltrNo(), e.getMessage());
+                log.error("물건 동기화 실패: cltrNo :{}, error= {}",dto.getCltrNo(), e.getMessage());
             }
 
 
@@ -87,13 +87,13 @@ public class PropertySyncService {
         log.info("온비드 데이터 동기화 완료: 신규={}, 업데이트={}", insertCount, updateCount);
         return insertCount + updateCount;
     }
-// DTO를 PropertyBidHistory 엔티티로 변환
+    // DTO를 PropertyBidHistory 엔티티로 변환
     private PropertyBidHistory convertToHistory(OnbidPropertyDto dto, Long propertyId) {
         PropertyBidHistory history = new PropertyBidHistory();
 
         history.setPropertyId(propertyId);
         history.setPbctNo(dto.getPbctNo());
-      history.setCltrNo(dto.getCltrNo());
+        history.setCltrNo(dto.getCltrNo());
         history.setPbctSeq(dto.getPbctSeq());
         history.setPbctDgr(dto.getPbctDgr());
         history.setFeeRate(dto.getFeeRate());
@@ -116,14 +116,14 @@ public class PropertySyncService {
 //                [수정] 소수점(.)을 남겨서 "10.5" -> "10.5"가 되도록 함
                 String rateStr =dto.getTdpsRt().replaceAll("[^0-9.]", "");
                 if(!rateStr.isEmpty()){
-  // 숫자가 하나도 없으면 파싱 오류가 날 수 있으므로 방지
+                    // 숫자가 하나도 없으면 파싱 오류가 날 수 있으므로 방지
                     history.setDepositRate(new BigDecimal(rateStr));
                 }
             } catch (Exception e) {
                 log.warn("입찰 보증금율 변환 실패 : {}", dto.getTdpsRt());
             }
         }
-history.setBidStatus(BidStatus.PENDING);
+        history.setBidStatus(BidStatus.PENDING);
         return history;
     }
 
@@ -166,7 +166,7 @@ history.setBidStatus(BidStatus.PENDING);
 
         return property;
     }
-//    날짜 문자열을 LocalDateTime으로 변환
+    //    날짜 문자열을 LocalDateTime으로 변환
     private LocalDateTime parseDateTime(String dateTimeStr){
         if(dateTimeStr == null || dateTimeStr.length()<14){
             return null;
