@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kim.onbidproperty.mapper.UserMapper">
+<!--    result map-->
+    <resultMap id="userResultMap" type="kim.onbidproperty.domain.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="phone"    column="phone"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+<!--    CRUD-->
+<!--    0.sql -->
+<sql id="baseColumnList">
+<trim>
+    id, username, password, name, email, phone, created_at, updated_at
+      </trim>
+</sql>
+<!--1.Read-->
+<!--ID로 조회-->
+    <select id="selectById" resultMap="userResultMap">
+        select <include refid="baseColumnList"></include> from users where id=#{id}
+    </select>
+</mapper>

@@ -92,3 +92,38 @@ create  table `user_bids`(
     CONSTRAINT `user_bids_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE,
     CONSTRAINT `user_bids_ibfk_2` FOREIGN KEY (`history_id`) REFERENCES `properties_bids_history` (`id`) ON UPDATE RESTRICT ON DELETE CASCADE
 )comment='입찰정보' collate ='utf8mb4_uca1400_ai_ci' engine =InnoDB;
+
+-- user table
+create table users(
+    id bigint(20)  auto_increment primary key ,
+    username varchar(100) not null unique ,
+    password varchar(255) not null,
+    name varchar(100) not null,
+    email varchar(100) unique ,
+    phone varchar(20) unique ,
+    created_at timestamp  default current_timestamp,
+    updated_at timestamp  default current_timestamp on update current_timestamp
+
+
+)comment='사용자' collate ='utf8mb4_uca1400_ai_ci' engine =InnoDB;
+
+-- 2. purchase table(PurchaseStatus enum 사용)
+create  table  purchase(
+  id bigint auto_increment primary key ,
+  user_id bigint not null ,
+  property_id bigint not null ,
+  purchase_price decimal(15,2) not null ,
+  purchase_time timestamp not null ,
+  status ENUM('PENDING',
+      'COMPLETED',
+      'CANCELLED',
+      'FAILED',
+      'REFUNDED') NOT NULL DEFAULT 'COMPLETED',
+    created_at timestamp  default current_timestamp,
+    updated_at timestamp  default current_timestamp on update current_timestamp,
+    foreign key (user_id) REFERENCES users(id),
+    FOREIGN KEY (property_id) REFERENCES properties(id)
+
+);
+
+
