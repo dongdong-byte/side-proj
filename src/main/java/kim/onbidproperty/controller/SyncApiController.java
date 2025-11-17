@@ -30,8 +30,8 @@ public class SyncApiController {
         int syncedCount = propertySyncService.syncProperties(numOfRows, maxPages);
         Map<String ,Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "데이터 동기화 완료");
-        response.put("syncedCount", syncedCount);
+        response.put("code", "sync.completed");
+        response.put("data", Map.of("syncedCount",syncedCount));
         return ResponseEntity.ok(response);
     }
 }

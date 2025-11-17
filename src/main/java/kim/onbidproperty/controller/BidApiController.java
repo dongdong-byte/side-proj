@@ -24,8 +24,8 @@ public class BidApiController {
     @GetMapping("/{id}")
     public ResponseEntity<UserBid> getBid(@PathVariable Long id) {
         log.info("API 입찰 조회: {}", id);
-        UserBid bid = userBidService.getBidById(id);
-        return ResponseEntity.ok(bid);
+
+        return ResponseEntity.ok(userBidService.getBidById(id));
     }
 
     // 특정 물건의 모든 입찰 조회
@@ -62,8 +62,8 @@ public class BidApiController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "입찰이 완료되었습니다.");
-        response.put("bidId", bidId);
+        response.put("code", "bid.created");
+        response.put("data", Map.of("bidId",bidId));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -79,7 +79,7 @@ public class BidApiController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "입찰이 수정되었습니다.");
+        response.put("code", "bid.updated");
 
         return ResponseEntity.ok(response);
     }
@@ -93,7 +93,7 @@ public class BidApiController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "낙찰자가 지정되었습니다.");
+        response.put("code", "bid.winnerAssigned");
 
         return ResponseEntity.ok(response);
     }
@@ -107,7 +107,7 @@ public class BidApiController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "입찰이 삭제되었습니다.");
+        response.put("code", "bid.deleted");
 
         return ResponseEntity.ok(response);
     }

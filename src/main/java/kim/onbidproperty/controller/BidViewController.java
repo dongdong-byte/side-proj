@@ -22,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BidViewController {
 
+//    controller-> return에 화면을 받겠다.
+//    restcontroller -> return에 값을 받겠다.
     private final UserBidService userBidService;
     private final PropertyService propertyService;
     private final PropertyBidHistoryService historyService;
@@ -65,12 +67,12 @@ public class BidViewController {
             Long bidId = userBidService.createBid(userBid);
 
             redirectAttributes.addFlashAttribute("success", true);
-            redirectAttributes.addFlashAttribute("message", "입찰이 완료되었습니다. 입찰번호: " + bidId);
+            redirectAttributes.addFlashAttribute("code", "bid.created" );
 
         } catch (Exception e) {
             log.error("입찰 등록 실패", e);
             redirectAttributes.addFlashAttribute("success", false);
-            redirectAttributes.addFlashAttribute("message", "입찰 실패: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("code", "bid.failed");
         }
 
         return "redirect:/properties/" + propertyId;

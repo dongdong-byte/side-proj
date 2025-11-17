@@ -18,7 +18,7 @@
 <sql id="baseColumnList">
 <trim>
     id, username, password, name, email, phone, created_at, updated_at
-      </trim>
+</trim>
 </sql>
 <!--1.Read-->
 <!--ID로 조회-->

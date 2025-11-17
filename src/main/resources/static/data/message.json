@@ -1,0 +1,38 @@
+{
+  "bid" : {
+    "created" : "입찰이 완료 되었습니다.",
+    "updated" : "입찰이 수정 되었습니다.",
+    "deleted" : "입찰이 삭제 되었습니다.",
+    "winnerAssigned" : "낙찰자가 지정 되었습니다.",
+    "failed" : "입찰처리에 실패 했습니다."
+
+  },
+  "property" : {
+    "created" : "물건이 등록 되었습니다.",
+    "updated" : "물건이 수정 되었습니다.",
+    "deleted" : "물건이 삭제 되었습니다."
+
+  },
+  "user"  : {
+    "created" :  "회원가입이 완료 되었습니다.",
+    "updated" : "회원정보가 수정 되었습니다.",
+    "deleted" : "회원이 탈퇴가 완료 되었습니다."
+
+
+  },
+  "purchase" : {
+    "created" : "구매가 완료 되었습니다.",
+    "statusUpdated" : "구매 상태가 변경되었습니다."
+  },
+  "error" : {
+    "network" :"네트워크 오류가 발생했습니다.",
+    "server" : "서버 오류가 발생했습니다.",
+    "invalidInput" : "입력값을 확인해주세요."
+
+  },
+  " sync" : {
+    "completed" : "데이터 동기화 완료!",
+    "failed" : "데이터 동기화에 실패 했습니다."
+  }
+
+}
