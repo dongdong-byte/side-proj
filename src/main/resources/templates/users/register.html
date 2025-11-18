@@ -49,6 +49,7 @@
 </nav>
 
 <div class="container mt-4">
+    <!-- ✅ 메시지 표시 영역 -->
     <div th:if="${message}"
          th:class="${success != null && success ? 'alert alert-success' : 'alert alert-danger'}"
          th:text="${message}">
