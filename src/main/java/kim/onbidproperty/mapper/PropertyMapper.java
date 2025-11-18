@@ -24,7 +24,7 @@ public interface PropertyMapper {
 //    상태별 물건조회
     List<Property> selectPropertiesByStatus(@Param("status") String status);
 //    진행중인 경매 물건 조회
-    List<Property> selectOngoingAuction();
+    List<Property> selectOngoingAuctions();
     //    2.CREATE
 //    물건등록
     int insertProperty(Property property);

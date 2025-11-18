@@ -66,7 +66,7 @@ public class PropertyService {
     // 진행중인 경매 물건 조회
     public List<Property> getOngoingAuctions() {
         log.info("진행중인 경매 물건 조회");
-        return propertyMapper.selectOngoingAuction();
+        return propertyMapper.selectOngoingAuctions();
     }
 
     // 물건 등록

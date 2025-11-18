@@ -1,10 +1,13 @@
 package kim.onbidproperty.controller;
 
+import jakarta.servlet.http.HttpSession;
 import kim.onbidproperty.domain.Property;
 import kim.onbidproperty.domain.PropertyBidHistory;
+import kim.onbidproperty.domain.User;
 import kim.onbidproperty.domain.UserBid;
 import kim.onbidproperty.dto.request.bid.BidCreateRequest;
 import kim.onbidproperty.dto.response.bid.UserBidResponse;
+import kim.onbidproperty.service.MessageService;
 import kim.onbidproperty.service.PropertyBidHistoryService;
 import kim.onbidproperty.service.PropertyService;
 import kim.onbidproperty.service.UserBidService;
@@ -29,12 +32,22 @@ public class BidViewController {
     private final UserBidService userBidService;
     private final PropertyService propertyService;
     private final PropertyBidHistoryService historyService;
+    private final MessageService messageService; // ✅ 추가
 
-    // 입찰 폼 페이지
+    // 입찰 폼 페이지-로그인 검증 추가
     @GetMapping("/new")
     public String bidForm(@RequestParam Long propertyId,
                           @RequestParam Long historyId,
-                          Model model) {
+                          Model model,
+                          HttpSession session,
+                          RedirectAttributes redirectAttributes) {
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("message", "로그인이 필요한 서비스입니다.");
+            return "redirect:/users/login";
+        }
+
         log.info("입찰 폼 페이지: propertyId={}, historyId={}", propertyId, historyId);
 
         Property property = propertyService.getPropertyById(propertyId);
@@ -46,10 +59,17 @@ public class BidViewController {
         return "bids/form";
     }
 
-    // 입찰 등록 처리
+    // 입찰 등록 처리-로그인 검증추가
     @PostMapping
     public String createBid(@ModelAttribute BidCreateRequest request,
-                            RedirectAttributes redirectAttributes) {
+                            RedirectAttributes redirectAttributes,HttpSession session) {
+        // 로그인 체크
+        User loginUser = (User) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            redirectAttributes.addFlashAttribute("message", "로그인이 필요한 서비스입니다.");
+            return "redirect:/users/login";
+        }
+
         log.info("입찰 등록: propertyId={}, historyId={}, amount={}", request.getPropertyId(), request.getHistoryId(), request.getBidAmount());
 
         try {
@@ -58,12 +78,16 @@ public class BidViewController {
             Long bidId = userBidService.createBid(userBid);
 
             redirectAttributes.addFlashAttribute("success", true);
-            redirectAttributes.addFlashAttribute("code", "bid.created" );
+            // ✅ 변경: code → message, messageService 사용
+            redirectAttributes.addFlashAttribute("message",
+                    messageService.getMessage("bid", "created") );
 
         } catch (Exception e) {
             log.error("입찰 등록 실패", e);
             redirectAttributes.addFlashAttribute("success", false);
-            redirectAttributes.addFlashAttribute("code", "bid.failed");
+            // ✅ 변경: code → message, messageService 사용
+            redirectAttributes.addFlashAttribute("message",
+                    messageService.getMessage("bid", "failed"));
             redirectAttributes.addFlashAttribute("errorDetail" ,e.getMessage());
 
         }
