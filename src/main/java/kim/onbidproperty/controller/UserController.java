@@ -88,7 +88,7 @@ public class UserController {
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id ,Model model){
         User user = userService.findById(id);
-        UserResponse response = modelMapper.map(user, UserResponse.class);
+        UserResponse response = UserResponse.from(user);  // ModelMapper 대신 from 사용
         model.addAttribute("user", response);
         return "users/detail";
 
@@ -96,7 +96,7 @@ public class UserController {
 @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model){
         User user = userService.findById(id);
-        UserResponse response = modelMapper.map(user, UserResponse.class);
+    UserResponse response = UserResponse.from(user);  // ModelMapper 대신 from 사용
         model.addAttribute("user", response);
         return "users/edit";
     }

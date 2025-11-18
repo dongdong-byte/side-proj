@@ -26,14 +26,14 @@
     <!-- 1. ID로 조회 -->
     <select id="selectById" parameterType="long" resultMap="purchaseResultMap">
         SELECT <include refid="purchaseColumns"/>
-        FROM purchases
+        FROM purchase
         WHERE id = #{id}
     </select>
 
     <!-- 2. 사용자 ID로 조회 -->
     <select id="selectByUserId" parameterType="long" resultMap="purchaseResultMap">
         SELECT <include refid="purchaseColumns"/>
-        FROM purchases
+        FROM purchase
         WHERE user_id = #{userId}
         ORDER BY purchase_time DESC
     </select>
@@ -41,7 +41,7 @@
     <!-- 3. 물건 ID로 조회 -->
     <select id="selectByPropertyId" parameterType="long" resultMap="purchaseResultMap">
         SELECT <include refid="purchaseColumns"/>
-        FROM purchases
+        FROM purchase
         WHERE property_id = #{propertyId}
         ORDER BY purchase_time DESC
     </select>
@@ -49,7 +49,7 @@
     <!-- 4. 사용자 ID와 물건 ID로 조회 -->
     <select id="selectByUserIdAndPropertyId" resultMap="purchaseResultMap">
         SELECT <include refid="purchaseColumns"/>
-        FROM purchases
+        FROM purchase
         WHERE user_id = #{userId}
         AND property_id = #{propertyId}
         ORDER BY purchase_time DESC
@@ -58,7 +58,7 @@
     <!-- 5. 구매 등록 -->
     <insert id="insertPurchase" parameterType="kim.onbidproperty.domain.Purchase"
             useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO purchases (user_id, property_id, purchase_price, purchase_time,
+        INSERT INTO purchase (user_id, property_id, purchase_price, purchase_time,
                                status, created_at, updated_at)
         VALUES (#{userId}, #{propertyId}, #{purchasePrice}, #{purchaseTime},
                 #{status}, NOW(), NOW())
@@ -66,7 +66,7 @@
 
     <!-- 6. 상태 수정 -->
     <update id="updateStatus">
-        UPDATE purchases
+        UPDATE purchase
         SET status = #{status},
             updated_at = NOW()
         WHERE id = #{id}
@@ -74,7 +74,7 @@
 
     <!-- 7. 구매 삭제 -->
     <delete id="deletePurchase" parameterType="long">
-        DELETE FROM purchases
+        DELETE FROM purchase
         WHERE id = #{id}
     </delete>
 

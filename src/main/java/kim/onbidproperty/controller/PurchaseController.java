@@ -85,6 +85,7 @@ public class PurchaseController {
         Purchase purchase = purchaseService.findById(id);
         PurchaseResponse purchaseResponse = PurchaseResponse.from(purchase);
         model.addAttribute("purchase", purchaseResponse);
+
         return "purchases/detail";
     }
 

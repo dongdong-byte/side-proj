@@ -1,14 +1,12 @@
 package kim.onbidproperty.dto.response.user;
 
 import kim.onbidproperty.domain.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor // ModelMapper용 추가
 @AllArgsConstructor // Builder용 추가
