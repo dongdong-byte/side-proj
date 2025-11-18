@@ -30,11 +30,36 @@
         <result property="updatedAt" column="updated_at"/>
         <result property="syncedAt" column="synced_at"/>
     </resultMap>
-    
+
+    <!--  재사용 가능한 전체 컬럼 목록 -->
+    <sql id="propertyColumns">
+        id, cltr_no, cltr_mnmt_no, plnm_no, name, goods_description, category,
+        location, road_address, pnu, appraisal_price, min_bid_price, current_price,
+        bid_method, auction_start_time, auction_end_time, pbct_status, sale_type,
+        status, view_count, bid_count, image_url, created_at, updated_at, synced_at
+    </sql>
+
+    <!--  INSERT 시 필요한 컬럼 -->
+    <sql id="propertyInsertColumns">
+        cltr_no, cltr_mnmt_no, plnm_no, name, goods_description, category,
+        location, road_address, pnu, appraisal_price, min_bid_price, current_price,
+        bid_method, auction_start_time, auction_end_time, pbct_status, sale_type,
+        status, view_count, bid_count, image_url, synced_at
+    </sql>
+
+    <!--  INSERT 의 VALUES 매핑 -->
+    <sql id="propertyInsertValues">
+        #{cltrNo}, #{cltrMnmtNo}, #{plnmNo}, #{name}, #{goodsDescription}, #{category},
+        #{location}, #{roadAddress}, #{pnu}, #{appraisalPrice}, #{minBidPrice}, #{currentPrice},
+        #{bidMethod}, #{auctionStartTime}, #{auctionEndTime}, #{pbctStatus}, #{saleType},
+        #{status}, #{viewCount}, #{bidCount}, #{imageUrl}, #{syncedAt}
+    </sql>
+
+
     <!-- 1. Read -->
     <!-- 전체 물건 조회(물건명 기준 정렬) -->
     <select id="selectAllProperties" resultMap="propertyResultMap">
-        SELECT *
+        SELECT <include refid="propertyColumns"/>
         FROM Properties
         WHERE status = 'AVAILABLE'
         ORDER BY created_at DESC
@@ -42,21 +67,21 @@
     
     <!-- 물건 ID로 조회 -->
     <select id="selectPropertyById" resultMap="propertyResultMap">
-        SELECT *
+        SELECT <include refid="propertyColumns"/>
         FROM Properties
         WHERE id = #{id}
     </select>
     
     <!-- 물건번호로 조회 -->
     <select id="selectPropertyByCltrNo" resultMap="propertyResultMap">
-        SELECT *
+        SELECT <include refid="propertyColumns"/>
         FROM Properties
         WHERE cltr_no = #{cltrNo}
     </select>
     
     <!-- 물건 검색(물건명, 위치) -->
     <select id="searchProperties" resultMap="propertyResultMap">
-        SELECT *
+        SELECT <include refid="propertyColumns"/>
         FROM Properties
         WHERE status = 'AVAILABLE'
           AND (
@@ -68,7 +93,7 @@
     
     <!-- 상태별 물건 조회 -->
     <select id="selectPropertiesByStatus" resultMap="propertyResultMap">
-        SELECT *
+        SELECT <include refid="propertyColumns"/>
         FROM Properties
         WHERE status = #{status}
         ORDER BY created_at DESC
@@ -76,7 +101,7 @@
     
     <!-- 진행중인 경매 물건 조회 -->
     <select id="selectOngoingAuctions" resultMap="propertyResultMap">
-        SELECT *
+        SELECT <include refid="propertyColumns"/>
         FROM Properties
         WHERE status = 'AVAILABLE'
           AND auction_start_time &lt;= NOW()
@@ -89,16 +114,10 @@
     <insert id="insertProperty" useGeneratedKeys="true" keyProperty="id" 
             parameterType="kim.onbidproperty.domain.Property">
         INSERT INTO Properties (
-            cltr_no, cltr_mnmt_no, plnm_no, name, goods_description, category, 
-            location, road_address, pnu, appraisal_price, min_bid_price, current_price, 
-            bid_method, auction_start_time, auction_end_time, pbct_status, sale_type, 
-            status, view_count, bid_count, image_url, synced_at
+            <include refid="propertyInsertColumns"/>
         )
         VALUES (
-            #{cltrNo}, #{cltrMnmtNo}, #{plnmNo}, #{name}, #{goodsDescription}, #{category},
-            #{location}, #{roadAddress}, #{pnu}, #{appraisalPrice}, #{minBidPrice}, #{currentPrice},
-            #{bidMethod}, #{auctionStartTime}, #{auctionEndTime}, #{pbctStatus}, #{saleType},
-            #{status}, #{viewCount}, #{bidCount}, #{imageUrl}, #{syncedAt}
+            <include refid="propertyInsertValues"/>
         )
     </insert>
     

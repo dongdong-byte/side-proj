@@ -1,7 +1,6 @@
 package kim.onbidproperty.dto.response.purchase;
 
 import kim.onbidproperty.domain.Purchase;
-import kim.onbidproperty.enums.PropertyStatus;
 import kim.onbidproperty.enums.PurchaseStatus;
 import lombok.Builder;
 import lombok.Getter;
