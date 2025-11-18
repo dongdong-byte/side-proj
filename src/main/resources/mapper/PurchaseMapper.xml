@@ -12,7 +12,7 @@
         <result property="purchasePrice" column="purchase_price"/>
         <result property="purchaseTime" column="purchase_time"/>
         <result property="status" column="status"
-                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+                typeHandler="kim.onbidproperty.config.PurchaseStatusTypeHandler"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
