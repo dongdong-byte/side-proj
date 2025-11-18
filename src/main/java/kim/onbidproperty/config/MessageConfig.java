@@ -16,7 +16,7 @@ import java.util.Map;
 public class MessageConfig {
 
     @Bean
-    public Map <String ,Map<String,String>>messageSource() {
+    public Map <String ,Map<String,String>>messages() {
         ObjectMapper objectMapper = new ObjectMapper();
         ClassPathResource resource = new ClassPathResource("messages.json");
 try {

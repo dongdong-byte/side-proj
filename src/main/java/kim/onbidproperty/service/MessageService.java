@@ -10,9 +10,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MessageService {
 
-    private  final Map<String ,Map<String, String>> messageSource;
+    private  final Map<String ,Map<String, String>> messages;
     public String getMessage(String category, String key){
-        Map<String , String> categoryMessages = messageSource.get(category);
+        Map<String , String> categoryMessages = messages.get(category);
         if(categoryMessages == null){
             return "메세지를 찾을수 없습니다.";
         }
