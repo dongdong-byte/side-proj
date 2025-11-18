@@ -1,28 +1,93 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="kim.onbidproperty.mapper.UserMapper">
-<!--    result map-->
-    <resultMap id="userResultMap" type="kim.onbidproperty.domain.User">
-        <id property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="name" column="name"/>
-        <result property="email" column="email"/>
-        <result property="phone"    column="phone"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
-<!--    CRUD-->
-<!--    0.sql -->
-<sql id="baseColumnList">
-<trim>
-    id, username, password, name, email, phone, created_at, updated_at
-</trim>
-</sql>
-<!--1.Read-->
-<!--ID로 조회-->
-    <select id="selectById" resultMap="userResultMap">
-        select <include refid="baseColumnList"></include> from users where id=#{id}
+
+    <!-- 1. ID로 조회 -->
+    <select id="selectById" parameterType="long" resultType="kim.onbidproperty.domain.User">
+        SELECT id, username, password, name, email, phone, created_at, updated_at
+        FROM users
+        WHERE id = #{id}
     </select>
+
+    <!-- 2. username으로 조회 -->
+    <select id="selectByUserName" parameterType="string" resultType="kim.onbidproperty.domain.User">
+        SELECT id, username, password, name, email, phone, created_at, updated_at
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+    <!-- 3. email로 조회 -->
+    <select id="selectByEmail" parameterType="string" resultType="kim.onbidproperty.domain.User">
+        SELECT id, username, password, name, email, phone, created_at, updated_at
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <!-- 4. 전체 조회 -->
+    <select id="selectAll" resultType="kim.onbidproperty.domain.User">
+        SELECT id, username, password, name, email, phone, created_at, updated_at
+        FROM users
+        ORDER BY id DESC
+    </select>
+
+    <!-- 5. username 존재 개수 조회 -->
+    <select id="countByUsername" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+    <!-- 6. email 존재 개수 조회 -->
+    <select id="countByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <!-- 7. username 존재 여부 -->
+    <select id="existsByUsername" parameterType="string" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM users
+            WHERE username = #{username}
+        )
+    </select>
+
+    <!-- 8. email 존재 여부 -->
+    <select id="existsByEmail" parameterType="string" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM users
+            WHERE email = #{email}
+        )
+    </select>
+
+    <!-- 9. 사용자 등록 -->
+    <insert id="insertUser" parameterType="kim.onbidproperty.domain.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (username, password, name, email, phone, created_at, updated_at)
+        VALUES (#{username}, #{password}, #{name}, #{email}, #{phone}, NOW(), NOW())
+    </insert>
+
+    <!-- 10. 사용자 정보 수정 (조건부) -->
+    <update id="updateUser" parameterType="kim.onbidproperty.domain.User">
+        UPDATE users
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 11. 사용자 삭제 -->
+    <delete id="deleteUser" parameterType="long">
+        DELETE FROM users
+        WHERE id = #{id}
+    </delete>
+
 </mapper>

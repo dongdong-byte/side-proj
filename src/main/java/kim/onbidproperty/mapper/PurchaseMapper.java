@@ -25,8 +25,8 @@ public interface PurchaseMapper {
     //    2.create : 등록
     void  insertPurchase(Purchase purchase);
 //    3.update :  상태 수정
-    void  updateStatus(@Param("id") Long id ,@Param("status") PurchaseStatus status);
+    int  updateStatus(@Param("id") Long id ,@Param("status") PurchaseStatus status);
 //    4. delete : 삭제
-    void  deletePurchase(Long id);
+    int  deletePurchase(Long id);
 
 }

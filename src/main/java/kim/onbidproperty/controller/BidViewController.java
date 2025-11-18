@@ -3,6 +3,8 @@ package kim.onbidproperty.controller;
 import kim.onbidproperty.domain.Property;
 import kim.onbidproperty.domain.PropertyBidHistory;
 import kim.onbidproperty.domain.UserBid;
+import kim.onbidproperty.dto.request.bid.BidCreateRequest;
+import kim.onbidproperty.dto.response.bid.UserBidResponse;
 import kim.onbidproperty.service.PropertyBidHistoryService;
 import kim.onbidproperty.service.PropertyService;
 import kim.onbidproperty.service.UserBidService;
@@ -46,23 +48,12 @@ public class BidViewController {
 
     // 입찰 등록 처리
     @PostMapping
-    public String createBid(@RequestParam Long propertyId,
-                            @RequestParam Long historyId,
-                            @RequestParam String bidderName,
-                            @RequestParam(required = false) String bidderPhone,
-                            @RequestParam(required = false) String bidderEmail,
-                            @RequestParam BigDecimal bidAmount,
+    public String createBid(@ModelAttribute BidCreateRequest request,
                             RedirectAttributes redirectAttributes) {
-        log.info("입찰 등록: propertyId={}, historyId={}, amount={}", propertyId, historyId, bidAmount);
+        log.info("입찰 등록: propertyId={}, historyId={}, amount={}", request.getPropertyId(), request.getHistoryId(), request.getBidAmount());
 
         try {
-            UserBid userBid = new UserBid();
-            userBid.setPropertyId(propertyId);
-            userBid.setHistoryId(historyId);
-            userBid.setBidderName(bidderName);
-            userBid.setBidderPhone(bidderPhone);
-            userBid.setBidderEmail(bidderEmail);
-            userBid.setBidAmount(bidAmount);
+            UserBid userBid = request.toEntity();
 
             Long bidId = userBidService.createBid(userBid);
 
@@ -77,7 +68,7 @@ public class BidViewController {
 
         }
 
-        return "redirect:/properties/" + propertyId;
+        return "redirect:/properties/" + request.getPropertyId();
     }
 
     // 특정 물건의 입찰 목록
@@ -86,7 +77,10 @@ public class BidViewController {
         log.info("물건별 입찰 목록: {}", propertyId);
 
         Property property = propertyService.getPropertyById(propertyId);
-        List<UserBid> bids = userBidService.getBidsByPropertyId(propertyId);
+        List<UserBidResponse> bids = userBidService.getBidsByPropertyId(propertyId)
+                        .stream()
+                                .map(UserBidResponse:: from)
+                                        .toList();
 
         model.addAttribute("property", property);
         model.addAttribute("bids", bids);
@@ -99,7 +93,10 @@ public class BidViewController {
     public String winningBids(Model model) {
         log.info("낙찰 목록 조회");
 
-        List<UserBid> winningBids = userBidService.getWinningBids(null);
+        List<UserBidResponse> winningBids = userBidService.getWinningBids(null)
+                .stream()
+                .map(UserBidResponse::from)
+                .toList();
         model.addAttribute("bids", winningBids);
 
         return "bids/winners";

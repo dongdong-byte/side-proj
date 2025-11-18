@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">온비드 공매물건</a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="/properties">물건 목록</a>
+            <a class="nav-link" href="/properties/ongoing">진행중 경매</a>
+            <a class="nav-link" href="/sync">데이터 동기화</a>
+            <a class="nav-link" href="/users">회원 목록</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- 메시지 표시 -->
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/users">회원 목록</a></li>
+            <li class="breadcrumb-item active" th:text="${user.username}"></li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>회원 정보</h4>
+            <div>
+                <a th:href="@{/users/{id}/edit(id=${user.id})}" class="btn btn-primary">정보 수정</a>
+                <a th:href="@{/purchases/user/{userId}(userId=${user.id})}" class="btn btn-info">구매 내역</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th width="200">ID</th>
+                    <td th:text="${user.id}"></td>
+                </tr>
+                <tr>
+                    <th>아이디</th>
+                    <td th:text="${user.username}"></td>
+                </tr>
+                <tr>
+                    <th>이름</th>
+                    <td th:text="${user.name}"></td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td th:text="${user.email}"></td>
+                </tr>
+                <tr>
+                    <th>연락처</th>
+                    <td th:text="${user.phone != null ? user.phone : '-'}"></td>
+                </tr>
+                <tr>
+                    <th>가입일</th>
+                    <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                </tr>
+                <tr>
+                    <th>수정일</th>
+                    <td th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/users" class="btn btn-secondary">목록으로</a>
+        <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post" style="display: inline;"
+              onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
+            <button type="submit" class="btn btn-danger">회원 탈퇴</button>
+        </form>
+    </div>
+</div>
+
+<footer class="text-center mt-5 mb-3 text-muted">
+    <small>© 2025 온비드 공매물건 조회 시스템</small>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

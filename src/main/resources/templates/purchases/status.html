@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구매 상태 변경</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">온비드 공매물건</a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="/properties">물건 목록</a>
+            <a class="nav-link" href="/properties/ongoing">진행중 경매</a>
+            <a class="nav-link" href="/sync">데이터 동기화</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/purchases">구매 목록</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/purchases/{id}(id=${purchase.id})}">구매 상세</a></li>
+            <li class="breadcrumb-item active">상태 변경</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>구매 상태 변경</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>현재 구매 정보</h5>
+                        <table class="table">
+                            <tr>
+                                <th>구매 ID</th>
+                                <td th:text="${purchase.id}"></td>
+                            </tr>
+                            <tr>
+                                <th>구매 금액</th>
+                                <td th:text="${#numbers.formatDecimal(purchase.purchasePrice, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                            </tr>
+                            <tr>
+                                <th>현재 상태</th>
+                                <td>
+                                    <span th:switch="${purchase.status.name()}">
+                                        <span th:case="'PENDING'" class="badge bg-warning text-dark" th:text="${purchase.status}">대기</span>
+                                        <span th:case="'COMPLETED'" class="badge bg-success" th:text="${purchase.status}">완료</span>
+                                        <span th:case="'CANCELLED'" class="badge bg-danger" th:text="${purchase.status}">취소</span>
+                                        <span th:case="'REFUNDED'" class="badge bg-secondary" th:text="${purchase.status}">환불</span>
+                                        <span th:case="*" class="badge bg-info" th:text="${purchase.status}">기타</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <form th:action="@{/purchases/{id}/status(id=${purchase.id})}" method="post">
+                        <div class="mb-3">
+                            <label for="status" class="form-label">새로운 상태 선택 *</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="PENDING" th:selected="${purchase.status.name() == 'PENDING'}">대기</option>
+                                <option value="COMPLETED" th:selected="${purchase.status.name() == 'COMPLETED'}">완료</option>
+                                <option value="CANCELLED" th:selected="${purchase.status.name() == 'CANCELLED'}">취소</option>
+                                <option value="REFUNDED" th:selected="${purchase.status.name() == 'REFUNDED'}">환불</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg">상태 변경</button>
+                            <a th:href="@{/purchases/{id}(id=${purchase.id})}" class="btn btn-secondary">취소</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center mt-5 mb-3 text-muted">
+    <small>© 2025 온비드 공매물건 조회 시스템</small>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

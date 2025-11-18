@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kim.onbidproperty.mapper.PurchaseMapper">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="purchaseResultMap" type="kim.onbidproperty.domain.Purchase">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="propertyId" column="property_id"/>
+        <result property="purchasePrice" column="purchase_price"/>
+        <result property="purchaseTime" column="purchase_time"/>
+        <result property="status" column="status"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 재사용 가능한 SQL 조각 -->
+    <sql id="purchaseColumns">
+        id, user_id, property_id, purchase_price, purchase_time,
+        status, created_at, updated_at
+    </sql>
+
+    <!-- 1. ID로 조회 -->
+    <select id="selectById" parameterType="long" resultMap="purchaseResultMap">
+        SELECT <include refid="purchaseColumns"/>
+        FROM purchases
+        WHERE id = #{id}
+    </select>
+
+    <!-- 2. 사용자 ID로 조회 -->
+    <select id="selectByUserId" parameterType="long" resultMap="purchaseResultMap">
+        SELECT <include refid="purchaseColumns"/>
+        FROM purchases
+        WHERE user_id = #{userId}
+        ORDER BY purchase_time DESC
+    </select>
+
+    <!-- 3. 물건 ID로 조회 -->
+    <select id="selectByPropertyId" parameterType="long" resultMap="purchaseResultMap">
+        SELECT <include refid="purchaseColumns"/>
+        FROM purchases
+        WHERE property_id = #{propertyId}
+        ORDER BY purchase_time DESC
+    </select>
+
+    <!-- 4. 사용자 ID와 물건 ID로 조회 -->
+    <select id="selectByUserIdAndPropertyId" resultMap="purchaseResultMap">
+        SELECT <include refid="purchaseColumns"/>
+        FROM purchases
+        WHERE user_id = #{userId}
+        AND property_id = #{propertyId}
+        ORDER BY purchase_time DESC
+    </select>
+
+    <!-- 5. 구매 등록 -->
+    <insert id="insertPurchase" parameterType="kim.onbidproperty.domain.Purchase"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO purchases (user_id, property_id, purchase_price, purchase_time,
+                               status, created_at, updated_at)
+        VALUES (#{userId}, #{propertyId}, #{purchasePrice}, #{purchaseTime},
+                #{status}, NOW(), NOW())
+    </insert>
+
+    <!-- 6. 상태 수정 -->
+    <update id="updateStatus">
+        UPDATE purchases
+        SET status = #{status},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 7. 구매 삭제 -->
+    <delete id="deletePurchase" parameterType="long">
+        DELETE FROM purchases
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

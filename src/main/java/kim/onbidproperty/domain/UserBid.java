@@ -30,4 +30,5 @@ public class UserBid {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+
 }

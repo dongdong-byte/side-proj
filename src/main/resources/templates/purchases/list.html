@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구매 목록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">온비드 공매물건</a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="/properties">물건 목록</a>
+            <a class="nav-link" href="/properties/ongoing">진행중 경매</a>
+            <a class="nav-link" href="/sync">데이터 동기화</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>구매 목록</h2>
+
+    <div th:if="${userId != null}" class="alert alert-info">
+        사용자 ID <strong th:text="${userId}"></strong>의 구매 내역
+    </div>
+
+    <div th:if="${propertyId != null}" class="alert alert-info">
+        물건 ID <strong th:text="${propertyId}"></strong>의 구매 내역
+    </div>
+
+    <div class="mb-3">
+        <a href="/purchases/create" class="btn btn-primary">구매 등록</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-primary">
+            <tr>
+                <th>구매 ID</th>
+                <th>사용자 ID</th>
+                <th>물건 ID</th>
+                <th>구매 금액</th>
+                <th>구매 시간</th>
+                <th>상태</th>
+                <th>등록일</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="purchase : ${purchases}">
+                <td th:text="${purchase.id}"></td>
+                <td>
+                    <a th:href="@{/purchases/user/{userId}(userId=${purchase.userId})}"
+                       th:text="${purchase.userId}"></a>
+                </td>
+                <td>
+                    <a th:href="@{/purchases/property/{propertyId}(propertyId=${purchase.propertyId})}"
+                       th:text="${purchase.propertyId}"></a>
+                </td>
+                <td th:text="${#numbers.formatDecimal(purchase.purchasePrice, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                <td th:text="${purchase.purchaseTime != null ? #temporals.format(purchase.purchaseTime, 'yyyy-MM-dd HH:mm') : '-'}"></td>
+                <td>
+                    <span th:switch="${purchase.status.name()}">
+                        <span th:case="'PENDING'" class="badge bg-warning text-dark" th:text="${purchase.status}">대기</span>
+                        <span th:case="'COMPLETED'" class="badge bg-success" th:text="${purchase.status}">완료</span>
+                        <span th:case="'CANCELLED'" class="badge bg-danger" th:text="${purchase.status}">취소</span>
+                        <span th:case="'REFUNDED'" class="badge bg-secondary" th:text="${purchase.status}">환불</span>
+                        <span th:case="*" class="badge bg-info" th:text="${purchase.status}">기타</span>
+                    </span>
+                </td>
+                <td th:text="${purchase.createdAt != null ? #temporals.format(purchase.createdAt, 'yyyy-MM-dd') : '-'}"></td>
+                <td>
+                    <a th:href="@{/purchases/{id}(id=${purchase.id})}" class="btn btn-sm btn-info">상세</a>
+                    <a th:href="@{/purchases/{id}/status(id=${purchase.id})}" class="btn btn-sm btn-warning">상태변경</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(purchases)}" class="alert alert-info">
+        구매 내역이 없습니다.
+    </div>
+
+    <div class="mt-4">
+        <a href="/" class="btn btn-secondary">홈으로</a>
+    </div>
+</div>
+
+<footer class="text-center mt-5 mb-3 text-muted">
+    <small>© 2025 온비드 공매물건 조회 시스템</small>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
