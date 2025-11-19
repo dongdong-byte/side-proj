@@ -42,6 +42,7 @@ dependencies {
 //    WebClient 의존성
     testImplementation 'io.projectreactor:reactor-test'// MyBatis-Spring 통합
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'                           // MariaDB JDBC 드라이버
+    testRuntimeOnly 'com.h2database:h2'                                          // H2 테스트용 데이터베이스
 
     /* =====================================
      💡 3. 개발 편의 및 코드 단축

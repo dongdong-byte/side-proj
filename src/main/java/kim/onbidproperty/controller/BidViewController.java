@@ -3,13 +3,16 @@ package kim.onbidproperty.controller;
 import jakarta.servlet.http.HttpSession;
 import kim.onbidproperty.domain.Property;
 import kim.onbidproperty.domain.PropertyBidHistory;
+import kim.onbidproperty.domain.Purchase;
 import kim.onbidproperty.domain.User;
 import kim.onbidproperty.domain.UserBid;
 import kim.onbidproperty.dto.request.bid.BidCreateRequest;
 import kim.onbidproperty.dto.response.bid.UserBidResponse;
+import kim.onbidproperty.enums.PurchaseStatus;
 import kim.onbidproperty.service.MessageService;
 import kim.onbidproperty.service.PropertyBidHistoryService;
 import kim.onbidproperty.service.PropertyService;
+import kim.onbidproperty.service.PurchaseService;
 import kim.onbidproperty.service.UserBidService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,7 @@ public class BidViewController {
     private final UserBidService userBidService;
     private final PropertyService propertyService;
     private final PropertyBidHistoryService historyService;
+    private final PurchaseService purchaseService;
     private final MessageService messageService; // ✅ 추가
 
     // 입찰 폼 페이지-로그인 검증 추가
@@ -76,6 +80,16 @@ public class BidViewController {
             UserBid userBid = request.toEntity();
 
             Long bidId = userBidService.createBid(userBid);
+
+            // Purchase 생성
+            Purchase purchase = new Purchase();
+            purchase.setUserId(loginUser.getId());
+            purchase.setPropertyId(request.getPropertyId());
+            purchase.setPurchasePrice(request.getBidAmount());
+            purchase.setPurchaseTime(java.time.LocalDateTime.now());
+            purchase.setStatus(PurchaseStatus.PENDING);
+            
+            purchaseService.createPurchase(purchase);
 
             redirectAttributes.addFlashAttribute("success", true);
             // ✅ 변경: code → message, messageService 사용
